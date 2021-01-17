@@ -1,0 +1,360 @@
+Index: ship.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\n\nclass Ship:\n    def __init__(self, ai_game):\n        self.screen = ai_game.screen\n        self.screen_rect = ai_game.screen.get_rect()\n\n        #Load ship\n        self.image = pygame.image.load('images/ship.bmp')\n        self.rect = self.image.get_rect()\n\n        #start eaxh new sheep at the bottom xenter of the screen\n        self.rect.midbottom = self.screen_rect.midbottom\n\n    def blitime(self):\n        #Draw the ship at its current location\n        self.screen.blit(self.image, self.rect)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/ship.py b/ship.py
+--- a/ship.py	(revision 9443ab0c1e2a448820cd5e0ce7f2457a58a46d0e)
++++ b/ship.py	(date 1610835901779)
+@@ -1,17 +1,47 @@
+ import pygame
+ 
++
+ class Ship:
++    '''A class mange the ship'''
+     def __init__(self, ai_game):
+         self.screen = ai_game.screen
++        self.settings = ai_game.settings
+         self.screen_rect = ai_game.screen.get_rect()
+ 
+         #Load ship
+         self.image = pygame.image.load('images/ship.bmp')
+         self.rect = self.image.get_rect()
+ 
+-        #start eaxh new sheep at the bottom xenter of the screen
++        #start each new sheep at the bottom xenter of the screen
+         self.rect.midbottom = self.screen_rect.midbottom
+ 
++        #Store a decimal value for the ship's horisontal position
++        self.x = float(self.rect.x)
++        self.y = float(self.rect.y)
++
++        #Movement flag
++        self.moving_right = False
++        self.moving_left = False
++        self.moving_up = False
++        self.moving_down = False
++
++    def update(self):
++        '''Update the ship's position based on the movement flag'''
++        if self.moving_right and self.rect.right < self.screen_rect.right:
++            self.x += self.settings.ship_speed
++        elif self.moving_left and self.rect.left > 0:
++            self.x -= self.settings.ship_speed
++
++        elif self.moving_down and self.rect.bottom < self.screen_rect.bottom:
++            self.y += self.settings.ship_speed
++        elif self.moving_up and self.rect.top > 0:
++            self.y -= self.settings.ship_speed
++
++        #update rect object from self.x
++        self.rect.x = self.x
++        self.rect.y = self.y
++
++
+     def blitime(self):
+         #Draw the ship at its current location
+         self.screen.blit(self.image, self.rect)
+\ No newline at end of file
+Index: bullet.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/bullet.py b/bullet.py
+new file mode 100644
+--- /dev/null	(date 1610839419259)
++++ b/bullet.py	(date 1610839419259)
+@@ -0,0 +1,30 @@
++import pygame
++from pygame.sprite import Sprite
++
++class Bullet(Sprite):
++    '''A class to manage bullets fired from the ship'''
++
++    def __init__(self, ai_game):
++        '''Create a bullet object at  the ship's current position'''
++        super().__init__()
++        self.screen = ai_game.screen
++        self.settings = ai_game.settings
++        self.color = self.settings.bullet_color
++
++        #Create a bullet rect at (0, 0) and than set correct position.
++        self.rect = pygame.Rect(0, 0, self.settings.bullet_width, self.settings.bullet_height)
++        self.rect.midtop = ai_game.ship.rect.midtop
++
++        #Store the bullet's position as decimal value
++        self.y = float(self.rect.y)
++
++    def update(self):
++        '''Move the bullet up the screen'''
++        #Update the decimal position of the bullet
++        self.y -= self.settings.bullet_speed
++        #Update the rect position
++        self.rect.y = self.y
++
++    def draw_bullet(self):
++        '''Draw the bullet to the screen'''
++        pygame.draw.rect(self.screen, self.color, self.rect)
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"ad5f82bf-8bd8-486a-87c3-edc93d9743e8\" name=\"Default Changelist\" comment=\"\" />\n    <disabled>\n      <disabled_changelists>\n        <list default=\"true\" id=\"ad5f82bf-8bd8-486a-87c3-edc93d9743e8\" name=\"Default Changelist\" comment=\"\" />\n      </disabled_changelists>\n      <disabled_trackers />\n    </disabled>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$/../..\" />\n  </component>\n  <component name=\"ProjectId\" id=\"1n4ymGUHqMT95yDjk637HSSn20x\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$\" />\n    <property name=\"settings.editor.selected.configurable\" value=\"vcs.Git\" />\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"ad5f82bf-8bd8-486a-87c3-edc93d9743e8\" name=\"Default Changelist\" comment=\"\" />\n      <created>1610663814560</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1610663814560</updated>\n    </task>\n    <servers />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <ignored-roots>\n      <path value=\"$PROJECT_DIR$/../..\" />\n    </ignored-roots>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 9443ab0c1e2a448820cd5e0ce7f2457a58a46d0e)
++++ b/.idea/workspace.xml	(date 1610836426832)
+@@ -1,7 +1,14 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ChangeListManager">
+-    <list default="true" id="ad5f82bf-8bd8-486a-87c3-edc93d9743e8" name="Default Changelist" comment="" />
++    <list default="true" id="ad5f82bf-8bd8-486a-87c3-edc93d9743e8" name="Default Changelist" comment="">
++      <change afterPath="$PROJECT_DIR$/bullet.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/alien_invasion.py" beforeDir="false" afterPath="$PROJECT_DIR$/alien_invasion.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/ship.py" beforeDir="false" afterPath="$PROJECT_DIR$/ship.py" afterDir="false" />
++    </list>
+     <disabled>
+       <disabled_changelists>
+         <list default="true" id="ad5f82bf-8bd8-486a-87c3-edc93d9743e8" name="Default Changelist" comment="" />
+@@ -13,8 +20,17 @@
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
+   </component>
++  <component name="FileTemplateManagerImpl">
++    <option name="RECENT_TEMPLATES">
++      <list>
++        <option value="Python Script" />
++      </list>
++    </option>
++  </component>
+   <component name="Git.Settings">
+-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
++    <option name="PREVIEW_PUSH_PROTECTED_ONLY" value="true" />
++    <option name="PUSH_AUTO_UPDATE" value="true" />
++    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+   <component name="ProjectId" id="1n4ymGUHqMT95yDjk637HSSn20x" />
+   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+@@ -23,12 +39,44 @@
+     <option name="showLibraryContents" value="true" />
+   </component>
+   <component name="PropertiesComponent">
++    <property name="ChangesTree.GroupingKeys" value="directory" />
+     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+     <property name="settings.editor.selected.configurable" value="vcs.Git" />
+   </component>
++  <component name="RunManager">
++    <configuration name="alien_invasion" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
++      <module name="Alian invasion" />
++      <option name="INTERPRETER_OPTIONS" value="" />
++      <option name="PARENT_ENVS" value="true" />
++      <envs>
++        <env name="PYTHONUNBUFFERED" value="1" />
++      </envs>
++      <option name="SDK_HOME" value="" />
++      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
++      <option name="IS_MODULE_SDK" value="true" />
++      <option name="ADD_CONTENT_ROOTS" value="true" />
++      <option name="ADD_SOURCE_ROOTS" value="true" />
++      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/alien_invasion.py" />
++      <option name="PARAMETERS" value="" />
++      <option name="SHOW_COMMAND_LINE" value="false" />
++      <option name="EMULATE_TERMINAL" value="false" />
++      <option name="MODULE_MODE" value="false" />
++      <option name="REDIRECT_INPUT" value="false" />
++      <option name="INPUT_FILE" value="" />
++      <method v="2" />
++    </configuration>
++    <recent_temporary>
++      <list>
++        <item itemvalue="Python.alien_invasion" />
++      </list>
++    </recent_temporary>
++  </component>
+   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
++  <component name="SvnConfiguration">
++    <configuration>$USER_HOME$/.subversion</configuration>
++  </component>
+   <component name="TaskManager">
+     <task active="true" id="Default" summary="Default task">
+       <changelist id="ad5f82bf-8bd8-486a-87c3-edc93d9743e8" name="Default Changelist" comment="" />
+@@ -49,6 +97,7 @@
+         </entry>
+       </map>
+     </option>
++    <option name="oldMeFiltersMigrated" value="true" />
+   </component>
+   <component name="VcsManagerConfiguration">
+     <ignored-roots>
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"VcsDirectoryMappings\">\n    <mapping directory=\"\" vcs=\"Git\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision 9443ab0c1e2a448820cd5e0ce7f2457a58a46d0e)
++++ b/.idea/vcs.xml	(date 1610804808970)
+@@ -1,6 +1,12 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="GitSharedSettings">
++    <option name="FORCE_PUSH_PROHIBITED_PATTERNS">
++      <list />
++    </option>
++  </component>
+   <component name="VcsDirectoryMappings">
+     <mapping directory="" vcs="Git" />
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: alien_invasion.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import sys\nimport pygame\nfrom settings import Settings\nfrom ship import Ship\n\n\nclass AlianInvesion:\n\n    def __init__(self):\n        pygame.init()\n        self.settings = Settings()\n\n        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_hight))\n        pygame.display.set_caption(\"Alian Invasion\")\n\n        self.ship = Ship(self)\n\n    def run_game(self):\n\n        # Start the main loop for the game\n        while True:\n            # Watch for keyboards and mouse\n            for event in pygame.event.get():\n                if event.type == pygame.QUIT:\n                    sys.exit()\n\n            # Redraw the screen during each pass trhough the loop.\n            self.screen.fill(self.settings.bg_color)\n            self.ship.blitime()\n            # Make the most recently drawn screen visible\n            pygame.display.flip()\n\n\nif __name__ == '__main__':\n    # Make game instance and run\n    ai = AlianInvesion()\n    ai.run_game()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/alien_invasion.py b/alien_invasion.py
+--- a/alien_invasion.py	(revision 9443ab0c1e2a448820cd5e0ce7f2457a58a46d0e)
++++ b/alien_invasion.py	(date 1610841432069)
+@@ -2,6 +2,7 @@
+ import pygame
+ from settings import Settings
+ from ship import Ship
++from bullet import Bullet
+ 
+ 
+ class AlianInvesion:
+@@ -10,25 +11,80 @@
+         pygame.init()
+         self.settings = Settings()
+ 
+-        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_hight))
++        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+         pygame.display.set_caption("Alian Invasion")
+ 
+         self.ship = Ship(self)
++        self.bullets = pygame.sprite.Group()
+ 
+     def run_game(self):
+-
+         # Start the main loop for the game
+         while True:
+-            # Watch for keyboards and mouse
+-            for event in pygame.event.get():
+-                if event.type == pygame.QUIT:
+-                    sys.exit()
++            self._check_events()
++            self.ship.update()
++            self.bullets.update()
++            self._update_bullets()
++            self._update_scren()
++
++
++    def _check_events(self):
++        # Keyboard movements
++        for event in pygame.event.get():
++            if event.type == pygame.QUIT:
++                sys.exit()
+ 
+-            # Redraw the screen during each pass trhough the loop.
+-            self.screen.fill(self.settings.bg_color)
+-            self.ship.blitime()
+-            # Make the most recently drawn screen visible
+-            pygame.display.flip()
++            elif event.type == pygame.KEYDOWN:
++                self._check_keydown_events(event)
++            elif event.type == pygame.KEYUP:
++                self._check_keyup_events(event)
++
++    def _check_keydown_events(self, event):
++        '''Respond to keypresses'''
++        if event.key == pygame.K_RIGHT:
++            self.ship.moving_right = True
++        elif event.key == pygame.K_LEFT:
++            self.ship.moving_left = True
++        elif event.key == pygame.K_UP:
++            self.ship.moving_up = True
++        elif event.key == pygame.K_DOWN:
++            self.ship.moving_down = True
++        elif event.key == pygame.K_ESCAPE:
++            sys.exit()
++        elif event.key == pygame.K_SPACE:
++            self._fire_bullet()
++
++    def _check_keyup_events(self, event):
++        '''Respond to key releases'''
++        if event.key == pygame.K_RIGHT:
++            self.ship.moving_right = False
++        elif event.key == pygame.K_LEFT:
++            self.ship.moving_left = False
++        elif event.key == pygame.K_UP:
++            self.ship.moving_up = False
++        elif event.key == pygame.K_DOWN:
++            self.ship.moving_down = False
++
++    def _fire_bullet(self):
++        '''Create a new bullet and add it ro the bullets group'''
++        if len(self.bullets) < self.settings.bullets_allowed:
++            new_bullet = Bullet(self)
++            self.bullets.add(new_bullet)
++
++    def _update_bullets(self):
++        '''Update position of bullets and get rid of od bullets'''
++        # Get rid of bullets tht have disappeared.
++        for bullet in self.bullets.copy():
++            if bullet.rect.bottom <= 0:
++                self.bullets.remove(bullet)
++
++    def _update_scren(self):
++        # Redraw the screen during each pass trhough the loop.
++        self.screen.fill(self.settings.bg_color)
++        self.ship.blitime()
++        for bullet in self.bullets.sprites():
++            bullet.draw_bullet()
++        # Make the most recently drawn screen visible
++        pygame.display.flip()
+ 
+ 
+ if __name__ == '__main__':
+Index: settings.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>class Settings:\n    #Store all classes\n    def __init__(self):\n        #screen settings\n        self.screen_width = 800\n        self.screen_hight = 600\n        self.bg_color = (230, 230, 230)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/settings.py b/settings.py
+--- a/settings.py	(revision 9443ab0c1e2a448820cd5e0ce7f2457a58a46d0e)
++++ b/settings.py	(date 1610841085614)
+@@ -3,5 +3,15 @@
+     def __init__(self):
+         #screen settings
+         self.screen_width = 800
+-        self.screen_hight = 600
++        self.screen_height = 600
+         self.bg_color = (230, 230, 230)
++
++        #ship setting
++        self.ship_speed = 2
++
++        #Bullet settings
++        self.bullet_speed = 1.0
++        self.bullet_width = 3
++        self.bullet_height = 15
++        self.bullet_color = (255, 0, 0)
++        self.bullets_allowed = 3
